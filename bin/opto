@@ -4,3 +4,15 @@ require 'byebug'
 $:.unshift File.join( File.dirname(__FILE__), "/../lib")
 
 require 'opto'
+
+oe = OptoExchange.new( ARGV[0] )
+
+Opto.registered.each do |op|
+  puts op.description
+
+  suite = op.new(oe)
+  
+  suite.check
+  puts
+
+end

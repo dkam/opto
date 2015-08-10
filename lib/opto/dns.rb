@@ -7,8 +7,12 @@ class Dns
     "Check up on your DNS setup" 
   end
 
-  def initialize(oe)
-    @oe = oe
+  def self.supports?(protocol)
+    [:http, :https, :smtp, :smtps].include?(protocol)
+  end
+
+  def initialize(data)
+    @data = data
   end
 
   def check
@@ -16,15 +20,16 @@ class Dns
   end
 
   def check_reverse_mapping
-    ip_address = Resolv.getaddress(@oe.url.host)
+    ip_address = Resolv.getaddress(@data.host)
+
     rev_name = Resolv.getname(ip_address)
 
-    if @oe.url.host != rev_name
-      puts "✗  Your host doesn't have a correct reverse DNS entry".red
-      puts "#{@oe.url.host} ->  #{ip_address}"
-      puts "#{ip_address}   ->  #{rev_name}"
+    if @data.host != rev_name
+      @data.failed( "DNS: Your host doesn't have a matching reverse DNS entry")
+      #puts "#{@data.host} ->  #{ip_address}"
+      #puts "#{ip_address}   ->  #{rev_name}"
     else
-      puts "✓  Reverse resolution matches".green
+      @data.passed( "DNS: Reverse resolution matches")
     end
 
   end

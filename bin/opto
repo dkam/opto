@@ -1,18 +1,47 @@
 #!/usr/bin/env ruby
+require 'slop'
 require 'byebug'
 
 $:.unshift File.join( File.dirname(__FILE__), "/../lib")
 
 require 'opto'
 
-oe = OptoExchange.new( ARGV[0] )
+opts = Slop.parse do |o|
+  o.string '-g', '--gtin',     'GTIN'
+  o.string '-t', '--title',    'Title'
+  o.string '-a', '--author',   'Author'
+  o.string '-f', '--format',   'Product format'
+  o.string '-b', '--blurb',    'Blurb'
+  o.string '-s', '--source',   'Blurb Source'
+  o.string '-d', '--database', 'Database'
+  o.on '-h', '--help' do
+    puts o
+    exit
+  end
+end
+
+protocol = case ARGV[0]
+when /^smtp/ then :smtp
+when /^imap/ then :imap
+when /^http/ then :http
+else :http
+end
+
+if protocol == :smtp
+  data = OptoSmtp.new( ARGV[0] )      
+else
+  data = OptoHttp.new( ARGV[0] )  
+end
 
 Opto.registered.each do |op|
-  puts op.description
 
-  suite = op.new(oe)
-  
-  suite.check
-  puts
+  if op.supports?( protocol )
+    puts op.description
+    suite = op.new(data) 
+    suite.check
+    puts
+  end
 
 end
+
+data.report

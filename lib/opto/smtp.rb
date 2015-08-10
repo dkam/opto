@@ -1,6 +1,8 @@
 require 'net/smtp'
+require 'benchmark'
 
 class Smtp
+  Opto.register( self)
 
   def self.description
     "Check various SMTP settings"
@@ -15,13 +17,17 @@ class Smtp
   end
 
   def check
-    z = Net::SMTP.start('mailma.nmilne.com', 587)
+    ttime = Benchmark.realtime do 
+      Net::SMTP.start('mailma.nmilne.com', 587) do |conn|
 
-    if z.capable_starttls?
-      @data.passed( 'SMTP: TLS Supported') 
-    else
-      @data.failed( 'SMTP: TLS Not Supported' )
+        if conn.capable_starttls?
+          @data.passed( 'SMTP: TLS Supported') 
+        else
+          @data.failed( 'SMTP: TLS Not Supported' )
+        end
+      end
     end
+    @data.passed( "SMTP: EHLO Transaction time: #{ttime} ") 
 
   end
 

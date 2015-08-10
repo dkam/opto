@@ -82,4 +82,5 @@ require 'cache'
 require 'images'
 require 'ssl'
 require 'dns'
+require 'smtp'
 

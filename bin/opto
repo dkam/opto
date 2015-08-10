@@ -33,6 +33,8 @@ else
   data = OptoHttp.new( ARGV[0] )  
 end
 
+
+
 Opto.registered.each do |op|
 
   if op.supports?( protocol )

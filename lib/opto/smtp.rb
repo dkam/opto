@@ -25,6 +25,14 @@ class Smtp
         else
           @data.failed( 'SMTP: TLS Not Supported' )
         end
+
+        resp = conn.ehlo('localhost')
+
+        banner_host = resp.message.gsub(/\d\d\d-/,'').strip
+
+        @data.passed('SMTP: Banner matches host') if     banner_host == @data.host
+        @data.passed('SMTP: Banner matches host') unless banner_host == @data.host
+
       end
     end
     @data.passed( "SMTP: EHLO Transaction time: #{ttime} ") 

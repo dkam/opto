@@ -8,3 +8,7 @@ gem 'nokogiri'
 gem 'colorize'
 gem 'fastimage'
 gem 'slop'
+#gem 'spf'
+#gem 'spf-query'
+gem 'scriptster'
+

@@ -1,3 +1,7 @@
+require 'openssl'
+require 'socket'
+require 'uri'
+
 class Ssl
   Opto.register( self)
 
@@ -23,6 +27,46 @@ class Ssl
       check_https_redirect  
     end
     check_ssl_details
+    check_protocols
+  end
+
+  def check_protocols
+    # https://github.com/igrigorik/http-2/blob/master/example/client.rb
+
+    uri = @data.url
+    tcp = TCPSocket.new(uri.host, uri.port)
+    sock = nil
+    server_protocols = nil
+
+    ctx = OpenSSL::SSL::SSLContext.new
+    ctx.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    
+    ctx.npn_protocols = ['h2', "spdy/3", "spdy/2", "http/1.1"]
+    
+    ctx.npn_select_cb = lambda do |protocols|
+      #puts "NPN protocols supported by server: #{protocols}"
+      #DRAFT if protocols.include? DRAFT
+      server_protocols = protocols
+    end
+
+    sock = OpenSSL::SSL::SSLSocket.new(tcp, ctx)
+    sock.sync_close = true
+    sock.hostname = uri.hostname
+    begin
+      sock.connect
+    rescue => e
+      #puts "Error : #{e.inspect}"
+    end
+
+    @data.passed("Suports HTTP/2") if server_protocols.include?('h2')
+    server_protocols.select {|p| p =~ /^h2-/ }.each do |pr|
+      @data.passed("Supports HTTP/2 Draft #{pr[/h2-(.*)/, 1]}")
+    end                   
+    
+    #sock.context.npn_protocols
+    #puts server_protocols
+    sock.close
+
   end
 
   def check_hsts

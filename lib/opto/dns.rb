@@ -22,7 +22,11 @@ class Dns
   def check_reverse_mapping
     ip_address = Resolv.getaddress(@data.host)
 
-    rev_name = Resolv.getname(ip_address)
+    begin 
+      rev_name = Resolv.getname(ip_address)
+    rescue Resolv::ResolvError => e
+      @data.warned("No reverse resolution for IP #{ip_address}")
+    end
 
     if @data.host != rev_name
       @data.failed( "DNS: Your host doesn't have a matching reverse DNS entry")

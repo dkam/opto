@@ -71,6 +71,12 @@ class OptoHttp < OptoBase
     @headers = @data.meta
     @doc     = Nokogiri::HTML(@data)
     @host    = @url.host
+
+    if @url.port.nil? 
+      @url.port = 80
+      @url.port = 443 if @url.scheme == 'https'
+    end
+
     super
   end
 

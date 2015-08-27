@@ -63,9 +63,10 @@ class OptoSmtp < OptoBase
 end
 
 class OptoHttp < OptoBase
-  attr_reader :url, :data, :headers, :doc, :host
+  attr_reader :raw_url, :url, :data, :headers, :doc, :host
 
   def initialize(url)
+    @raw_url = url
     @url     = Addressable::URI.heuristic_parse( url )
     @data    = open(@url)
     @headers = @data.meta
@@ -89,4 +90,4 @@ require 'images'
 require 'ssl'
 require 'dns'
 require 'smtp'
-
+require 'html'

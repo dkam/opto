@@ -24,7 +24,11 @@ class Html
 
 
   def check_canonical
-    canonical_url = @data.doc.at_xpath("//link[@rel = 'canonical']/@href").value
+    canonical_element = @data.doc.at_xpath("//link[@rel = 'canonical']/@href")
+
+    return if canonical_element.nil?
+
+    canonical_url = canonical_element.value
     
     @data.passed("HTML: Canonical URL matches URL") if  @data.raw_url ==  canonical_url
     @data.warned("HTML: No Canonical URL") if  canonical_url.nil?
@@ -40,6 +44,8 @@ class Html
     ##
 
     ssb = @data.doc.xpath("//script[@type='application/ld+json']")
+
+    return if ssb.length == 0
 
     @data.warned("HTML: Multiple 'applicaiton/ld+json' sections") if ssb.length > 1
     begin

@@ -23,6 +23,9 @@ class Html
   end
 
 
+  ##
+  # If the page has a canonical URL, check it's the same as the page we were given
+  ##
   def check_canonical
     canonical_element = @data.doc.at_xpath("//link[@rel = 'canonical']/@href")
 
@@ -35,13 +38,13 @@ class Html
     @data.failed("HTML: Canonical URL (#{canonical_url}) doesn't match given URL (#{@data.url.to_s})") if canonical_url != @data.raw_url
   end
 
+  ## 
+  # Search Search Box
+  #
+  # http://schema.org/SearchAction
+  # https://developers.google.com/structured-data/slsb-overview
+  ##
   def check_ssb
-    ## 
-    # Search Search Box
-    #
-    # http://schema.org/SearchAction
-    # https://developers.google.com/structured-data/slsb-overview
-    ##
 
     ssb = @data.doc.xpath("//script[@type='application/ld+json']")
 

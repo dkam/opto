@@ -27,7 +27,6 @@ class Cache
     gzip_data = open(@data.url, 'Accept-Encoding' => 'gzip')
     if gzip_data.meta["content-encoding"] 
       gzs = gzip_data.size
-      puts "#{no_compression} / #{gzs}"
       @data.passed("Caching: GZip supported.  #{no_compression - gzs} Bytes or #{(100 - gzs.to_f / no_compression * 100).to_i}% saved")
     else
       @data.failed("Caching: GZIP Compression not supported")

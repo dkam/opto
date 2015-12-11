@@ -97,6 +97,19 @@ class Ssl
   end
 
   def check_ssl_details
+    tcp = TCPSocket.new(@data.url.host, 443)
+
+    sock = OpenSSL::SSL::SSLSocket.new(tcp)
+    sock.sync_close = true
+    sock.hostname = @data.url.host
+    sock.connect
+
+    if sock.peer_cert.not_after < ( DateTime.now >> 1 ).to_time
+      @data.failed("SSL: Certificate expires in the next month (#{sock.peer_cert.not_after}) redirected to HTTPS" )
+    else
+      @data.passed("SSL: More than 1 month validity (#{sock.peer_cert.not_after})")
+    end
+    sock.close
 
     #check
     #http://security.stackexchange.com/questions/70733/how-do-i-use-openssl-s-client-to-test-for-absence-of-sslv3-support
@@ -109,5 +122,7 @@ class Ssl
     #nmap --script ssl-cert,ssl-enum-ciphers -p           com
     #
   end
+
+  
 end
 

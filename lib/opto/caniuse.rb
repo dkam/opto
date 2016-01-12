@@ -5,12 +5,13 @@ class Cache
     "Check up on CSS features with CanIUse data" 
   end
 
-  def self.supports?(protocol)
-    [:http, :https].include?(protocol)
+  def self.supports?(server)
+    [:http, :https].include?(server.protocol)
   end
 
-  def initialize(data)
-    @data = data
+  def initialize(server)
+    @server = server
+    @result = @server.result
   end
 
   def check

@@ -11,12 +11,13 @@ class Images
     [:http, :https].include?(protocol)
   end
 
-  def initialize(oe)
-    @oe = oe
+  def initialize(server)
+    @server = server
+    @result = @server.result
   end
 
   def check
-    @images = @oe.doc.xpath("//img").collect {|e| Image.new(e, @oe.url) }
+    @images = @server.response.doc.xpath("//img").collect {|e| Image.new(e, @server.url) }
     count
     optimise
   end
@@ -27,7 +28,7 @@ class Images
     other_count  = 0
     size_count  = 0
 
-    @oe.doc.xpath("//img").each do |img|
+    @server.response.doc.xpath("//img").each do |img|
       alt_count += 1 unless img.attributes["alt"].nil?
       size_count   += 1 unless img.attributes["width"].nil? && img.attributes["height"].nil?
     end

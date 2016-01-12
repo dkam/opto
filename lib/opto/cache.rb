@@ -4,32 +4,33 @@ class Cache
   Opto.register( self)
 
   def self.description
-    "Check up on your cache setup" 
+    "Check server cache setup" 
   end
 
-  def self.supports?(protocol)
-    [:http, :https].include?(protocol)
+  def self.supports?(server)
+    [:http, :https].include?(server.protocol)
   end
 
-  def initialize(data)
-    @data = data
+  def initialize(server)
+    @server = server
+    @result = @server.result
   end
 
   def check
-    puts "Try https://redbot.org/?uri=#{CGI.escape(@data.url.to_s)}".yellow
+    puts "Try https://redbot.org/?uri=#{CGI.escape(@server.url.to_s)}".yellow
 
     check_compression
   end
 
   def check_compression
-    no_compression = @data.data.size
+    no_compression = @server.response.data.size ##
 
-    gzip_data = open(@data.url, 'Accept-Encoding' => 'gzip')
+    gzip_data = open(@server.url, 'Accept-Encoding' => 'gzip')
     if gzip_data.meta["content-encoding"] 
       gzs = gzip_data.size
-      @data.passed("Caching: GZip supported.  #{no_compression - gzs} Bytes or #{(100 - gzs.to_f / no_compression * 100).to_i}% saved")
+      @result.passed("Caching: GZip supported.  #{no_compression - gzs} Bytes or #{(100 - gzs.to_f / no_compression * 100).to_i}% saved")
     else
-      @data.failed("Caching: GZIP Compression not supported")
+      @result.failed("Caching: GZIP Compression not supported")
     end
     
     # TODO: test other compression schemes, deflate and sdch

@@ -20,30 +20,17 @@ opts = Slop.parse do |o|
   end
 end
 
-protocol = case ARGV[0]
-when /^smtp/ then :smtp
-when /^imap/ then :imap
-when /^http/ then :http
-else :http
-end
-
-if protocol == :smtp
-  data = OptoSmtp.new( ARGV[0] )      
-else
-  data = OptoHttp.new( ARGV[0] )  
-end
-
+server = Opto::Server.new( ARGV[0] )
 
 
 Opto.registered.each do |op|
 
-  if op.supports?( protocol )
+  if op.supports?( server )
     puts op.description
-    suite = op.new(data) 
+    suite = op.new(server)
     suite.check
-    puts
   end
 
 end
 
-data.report
+server.result.report

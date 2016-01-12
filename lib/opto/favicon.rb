@@ -2,14 +2,15 @@ class Favicon
   Opto.register( self)
 
   def self.description
-    "Check up on your Favicons" 
+    "Check Favicons" 
   end
 
-  def self.supports?(protocol)
-    [:http, :https].include?(protocol)
+  def self.supports?(server)
+    [:http, :https].include?(server.protocols)
   end
 
-  def initialize(url, doc)
+  def initialize(server)
+    @server = server
+    @result = @server.result
   end
-
 end

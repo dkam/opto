@@ -9,12 +9,13 @@ class Html
     "Check up on your HTML" 
   end
 
-  def self.supports?(protocol)
-    [:http, :https].include?(protocol)
+  def self.supports?(server)
+    [:http, :https].include?(server.protocol)
   end
 
-  def initialize(data)
-    @data = data
+  def initialize(server)
+    @server = server
+    @result = @server.result
   end
 
   def check
@@ -28,21 +29,21 @@ class Html
   # If the page has a canonical URL, check it's the same as the page we were given
   ##
   def check_canonical
-    canonical_element = @data.doc.at_xpath("//link[@rel = 'canonical']/@href")
+    canonical_element = @server.response.doc.at_xpath("//link[@rel = 'canonical']/@href")
 
     return if canonical_element.nil?
 
     canonical_url = canonical_element.value
 
     if  canonical_url.nil?
-      @data.warned("HTML: No Canonical URL") 
-    elsif URI.parse(canonical_url) == URI.parse(@data.raw_url)
-    #elsif  @data.raw_url ==  canonical_url
-      #if canonical_url != @data.raw_url
-      #if URI.parse(canonical_url) != URI.parse(@data.raw_url)
-      @data.passed("HTML: Canonical URL matches URL") 
+      @result.warned("HTML: No Canonical URL") 
+    elsif URI.parse(canonical_url) == URI.parse(@server.uri)
+    #elsif  @server.uri ==  canonical_url
+      #if canonical_url != @server.uri
+      #if URI.parse(canonical_url) != URI.parse(@server.uri)
+      @result.passed("HTML: Canonical URL matches URL") 
     else
-      @data.failed("HTML: Canonical URL (#{canonical_url}) doesn't match given URL (#{@data.raw_url})") 
+      @result.failed("HTML: Canonical URL (#{canonical_url}) doesn't match given URL (#{@server.uri})") 
     end
   end
 
@@ -54,15 +55,15 @@ class Html
   ##
   def check_ssb
 
-    ssb = @data.doc.xpath("//script[@type='application/ld+json']")
+    ssb = @server.response.doc.xpath("//script[@type='application/ld+json']")
 
     return if ssb.length == 0
 
-    @data.warned("HTML: Multiple 'applicaiton/ld+json' sections") if ssb.length > 1
+    @result.warned("HTML: Multiple 'applicaiton/ld+json' sections") if ssb.length > 1
     begin
       ssb_json = JSON.parse( ssb.first.text )
     rescue JSON::ParserError => e
-      @data.failed("HTML: JSON Parse error for 'applicaiton/ld+json' sections")
+      @result.failed("HTML: JSON Parse error for 'applicaiton/ld+json' sections")
       return
     end
 
@@ -78,17 +79,17 @@ class Html
       raise("'potentialAction,query-input' should contain 'required name='") unless ssb_json["potentialAction"]["query-input"] =~ /required name=/
 
     rescue Exception => e 
-      @data.failed("HTML: SSB parameters missing: #{e.message}")
+      @result.failed("HTML: SSB parameters missing: #{e.message}")
     else
-      @data.passed("HTML: SSB parameters all present")
+      @result.passed("HTML: SSB parameters all present")
     end
 
     ## Check that the query parameters match
     query_param   = ssb_json["potentialAction"]["query-input"].split('=')[1]
     target_param  = ssb_json["potentialAction"]["target"][/{(.*)}/,1]
 
-    @data.passed("HTML: SSB params match") if query_param == target_param
-    @data.failed("HTML: SSB params do not match") unless  query_param == target_param
+    @result.passed("HTML: SSB params match") if query_param == target_param
+    @result.failed("HTML: SSB params do not match") unless  query_param == target_param
 
 
   end
@@ -102,44 +103,44 @@ class Html
     ##
     # The downloaded page size
     ##
-    #comp_get = c.head(@data.url)
+    #comp_get = c.head(@server.url)
     #byebug
     #compressed_page = comp_get.headers["Content-Length"].to_i if comp_get.status == 200
-    @data.passed("HTML: Page size #{@data.data.length.to_human} ") # (#{compressed_page.to_human} compressed)")
+    @result.passed("HTML: Page size #{@server.response.data.length.to_human} ") # (#{compressed_page.to_human} compressed)")
 
     ##
     # Use this base
     ##
-    base = URI.parse("#{@data.url.scheme}://#{@data.url.host}")
+    base = URI.parse("#{@server.url.scheme}://#{@server.url.host}")
 
     ## 
     #  Sum the Javascript scripts
     #  Note: Need to take into account Google Analytics building a script tag that
     #        this static analysis doesn't consider
     ##
-    js_length = @data.doc.xpath('//script/@src').inject(0) do |sum, src|  
+    js_length = @server.response.doc.xpath('//script/@src').inject(0) do |sum, src|  
       res = base.merge(URI.parse(src))
       sum + c.head(res.to_s).headers["Content-Length"].to_i
     end
 
     ## This will produce incorrect results if the server doesn't support gz
-    cjs_length = @data.doc.xpath('//script/@src').inject(0) do |sum, src|  
+    cjs_length = @server.response.doc.xpath('//script/@src').inject(0) do |sum, src|  
       res = base.merge(URI.parse(src))
       sum + c.head(res.to_s + ".gz").headers["Content-Length"].to_i
     end
-    @data.passed("HTML: Javascript size #{js_length.to_human} (Compressed: #{cjs_length.to_human})")
+    @result.passed("HTML: Javascript size #{js_length.to_human} (Compressed: #{cjs_length.to_human})")
 
     ##
     # Sum the CSS
     ##
-    cs_length = @data.doc.xpath('//link/@href').select{|s| s.value[/css$/]}.inject(0) do |sum, src|  
+    cs_length = @server.response.doc.xpath('//link/@href').select{|s| s.value[/css$/]}.inject(0) do |sum, src|  
       res = base.merge(URI.parse(src))
       sum + c.head(res.to_s).headers["Content-Length"].to_i
     end
-    ccs_length = @data.doc.xpath('//link/@href').select{|s| s.value[/css$/]}.inject(0) do |sum, src|  
+    ccs_length = @server.response.doc.xpath('//link/@href').select{|s| s.value[/css$/]}.inject(0) do |sum, src|  
       res = base.merge(URI.parse(src))
       sum + c.head(res.to_s + ".gz").headers["Content-Length"].to_i
     end
-    @data.passed("HTML: Style size #{cs_length.to_human}")
+    @result.passed("HTML: Style size #{cs_length.to_human}")
   end
 end

@@ -3,6 +3,7 @@ require 'nokogiri'
 require 'colorize'
 require 'fastimage'
 require 'addressable/uri'
+require 'httpclient'
 
 $:.unshift File.join( File.dirname(__FILE__), "/opto")
 
@@ -16,73 +17,112 @@ module Opto
   def self.register(  klass )
     @@subclasses << klass
   end
+
+  class Server
+    attr_reader :uri, :url, :host, :responses, :protocol, :result
+
+    def initialize(uri)
+      @responses = []
+      @protocol = case uri
+        when /^smtp/ then :smtp
+        when /^imap/ then :imap
+        when /^http/ then :http
+        else :http
+      end
+      @uri = uri
+      #@url = Addressable::URI.heuristic_parse( uri )
+      @url = URI.parse( uri )
+      @host    = @url.host
+      #if @url.port.nil? 
+      #  @url.port = 80
+      #  @url.port = 443 if @url.scheme == 'https'
+      #end
+
+      if @protocol == :http
+        resp =  ServerResponse.new( open(@url) )
+        @responses << resp
+      end
+      @result = Opto::Result.new(self)
+    end
+
+    def response
+      @responses.first
+    end
+  end
+
+  class ServerResponse
+    attr_reader :headers, :data, :doc
+    def initialize(data)
+      @data = data
+      @headers = @data.meta 
+
+      if @headers["content-type"] =~ /text\/html/
+        @doc = Nokogiri::HTML(@data)
+      elsif @headers["content-type"] =~ /application\/json/
+        @doc = JSON.parse(@data)
+      end
+    end
+  end
+
+  class Result
+    def initialize(server)
+      @server = server
+      @url = server.url
+      @passed = [] 
+      @warned = [] 
+      @failed = []
+    end
+
+    def passed(description)
+      @passed << description
+    end
+    def warned(description)
+      @warned << description
+    end
+    def failed(description)
+      @failed << description
+    end
+
+    def report
+      puts
+      puts "Report for #{@url}"
+      @passed.each {|r|  puts "✓ #{r}".green }
+      @warned.each {|r|  puts "! #{r}".yellow }
+      @failed.each {|r|  puts "✗ #{r}".red }
+    end
+  end
 end
 
 class Object
   #http://ozmm.org/posts/try.html
+  # Deprecate this with &. ?
   def try(method)
     send method if respond_to? method
   end
 end
 
-class OptoBase
 
-  def initialize(url)
-    @passed = [] 
-    @warned = [] 
-    @failed = []
+class Numeric
+  def to_human
+    units = %w{B KB MB GB TB}
+    return 0 if self == 0
+    e = (Math.log(self)/Math.log(1024)).floor
+    s = "%.3f" % (to_f / 1024**e)
+    s.sub(/\.?0*$/, units[e])
   end
-
-  def passed(description)
-    @passed << description
-  end
-  def warned(description)
-    @warned << description
-  end
-  def failed(description)
-    @failed << description
-  end
-
-  def report
-    @passed.each {|r|  puts "✓ #{r}".green }
-    @warned.each {|r|  puts "! #{r}".yellow }
-    @failed.each {|r|  puts "✗ #{r}".red }
-  end
-
 end
 
-class OptoSmtp < OptoBase
-  attr_reader :host
 
-  def initialize(url)
-    @host = url[/smtps?:\/\/([a-zA-Z0-9\.]*)\//,1]
-    @checks = []
-    super
-  end
-
-end
-
-class OptoHttp < OptoBase
-  attr_reader :raw_url, :url, :data, :headers, :doc, :host
-
-  def initialize(url)
-    @raw_url = url
-    @url     = Addressable::URI.heuristic_parse( url )
-    @data    = open(@url)
-    @headers = @data.meta
-    @doc     = Nokogiri::HTML(@data)
-    @host    = @url.host
-
-    if @url.port.nil? 
-      @url.port = 80
-      @url.port = 443 if @url.scheme == 'https'
-    end
-
-    super
-  end
-
-
-end
+#class OptoSmtp < OptoBase
+#  attr_reader :host
+#
+#  def initialize(url)
+#    @host = url[/smtps?:\/\/([a-zA-Z0-9\.]*)\//,1]
+#    @checks = []
+#    super
+#  end
+#
+#end
 
 #require 'favicon'
 require 'cache'

@@ -7,6 +7,8 @@ require 'httpclient'
 
 $:.unshift File.join( File.dirname(__FILE__), "/opto")
 
+require 'version'
+
 module Opto
   @@subclasses = []
 
@@ -19,7 +21,7 @@ module Opto
   end
 
   class Server
-    attr_reader :uri, :url, :host, :responses, :protocol, :result
+    attr_reader :uri, :url, :host, :responses, :protocol, :result, :info
 
     def initialize(uri)
       @responses = []
@@ -43,6 +45,7 @@ module Opto
         @responses << resp
       end
       @result = Opto::Result.new(self)
+      @info = {}
     end
 
     def response
@@ -55,7 +58,7 @@ module Opto
     def initialize(data)
       @data = data
       @headers = @data.meta 
-      @content_type = @headers["Content-Type"] 
+      @content_type = @headers["content-type"] 
 
       if @content_type =~ /text\/html/
         @doc = Nokogiri::HTML(@data)
@@ -76,6 +79,7 @@ module Opto
       @passed = [] 
       @warned = [] 
       @failed = []
+      @info   = []
     end
 
     def passed(description)
@@ -87,10 +91,14 @@ module Opto
     def failed(description)
       @failed << description
     end
+    def info(description)
+      @info << description
+    end
 
     def report
       puts
       puts "Report for #{@url}"
+      @info.each   {|r|  puts "#{r}" }
       @passed.each {|r|  puts "✓ #{r}".green }
       @warned.each {|r|  puts "! #{r}".yellow }
       @failed.each {|r|  puts "✗ #{r}".red }
@@ -131,9 +139,11 @@ end
 
 #require 'favicon'
 require 'server_time'
+require 'html'
 require 'cache'
 require 'images'
 require 'ssl'
 require 'dns'
 require 'smtp'
-require 'html'
+require 'software_guess'
+require 'cve'

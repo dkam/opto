@@ -6,7 +6,7 @@ class Favicon
   end
 
   def self.supports?(server)
-    [:http, :https].include?(server.protocols)
+    [:http, :https].include?(server.protocol)
   end
 
   def initialize(server)

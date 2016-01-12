@@ -19,7 +19,7 @@ class Html
   end
 
   def check
-    return unless @server.response.content_type =~ /html/
+    return unless @server.response.content_type == :html
     check_canonical
     check_ssb
     check_size
@@ -71,7 +71,7 @@ class Html
     # Check all the appropriate keys are present
     begin 
       raise("'@context' should be 'http://schema.org'") unless ssb_json["@context"] == "http://schema.org"
-      raise("'@type' should be 'WebSite'")              unless ssb_json["@type"] == "WebSite"
+      raise("'@type' should be 'WebSite', not #{ssb_json['@type']}")              unless ssb_json["@type"] == "WebSite"
       raise("'url' is missing")                         if ssb_json["url"].nil?
       raise("'potentialAction' should be a hash")       unless ssb_json["potentialAction"].is_a?(Hash)
 
@@ -86,8 +86,10 @@ class Html
     end
 
     ## Check that the query parameters match
-    query_param   = ssb_json["potentialAction"]["query-input"].split('=')[1]
-    target_param  = ssb_json["potentialAction"]["target"][/{(.*)}/,1]
+    if ssb_json["potentialAction"]
+      query_param   = ssb_json["potentialAction"]["query-input"].split('=')[1]
+      target_param  = ssb_json["potentialAction"]["target"][/{(.*)}/,1]
+    end
 
     @result.passed("HTML: SSB params match") if query_param == target_param
     @result.failed("HTML: SSB params do not match") unless  query_param == target_param

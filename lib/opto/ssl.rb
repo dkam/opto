@@ -12,7 +12,7 @@ class Ssl
   end
 
   def self.supports?(server)
-    [:http, :https, :smtp, :smtps].include?(server.protocol)
+    [ :https, :smtp, :smtps].include?(server.protocol)
   end
 
   def initialize(server)

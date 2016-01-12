@@ -32,14 +32,20 @@ class SoftwareGuess
       ##
       # Now see if we recognise it
       ## 
-      @server.info[:server_name] = 'Nginx' if server =~ /nginx/i 
-      @server.info[:server_version] = Version.new(server[/\/([\d\.]*)/, 1]) if server =~ /nginx/i
+      if server =~ /nginx/i 
+        @server.info[:server_name] = 'Nginx' 
+        server_version = server[/\/([\d\.]*)/, 1]
+        @server.info[:server_version] = Version.new(server_version) if server_version
+      end
 
       @server.info[:server_name] = 'Ruby Thin' if server =~ /\Athin\z/i 
 
       #"server" => "Apache/2.2.15 (CentOS)",
-      @server.info[:server_name] = 'Apache' if server =~ /Apache/
-      @server.info[:server_version] = Version.new(server[/\/([\d\.]*)/, 1]) if server =~ /Apache/i
+      if server =~ /Apache/i
+        @server.info[:server_name] = 'Apache' 
+        server_version = server[/\/([\d\.]*)/, 1]
+        @server.info[:server_version] = Version.new(server_version) if server_version
+      end
     end
 
     if @server.info[:server_name]
@@ -50,7 +56,6 @@ class SoftwareGuess
 
   def guess_application_server
     if powered_by = @server.response.headers['x-powered-by']
-
       ##
       # Start with the genertic header value
       ##
@@ -71,6 +76,14 @@ class SoftwareGuess
 
     if @server.response.headers['x-rack-cache']
       @server.info[:app_server_name] = 'Ruby Rack'
+    end
+
+    #"x-generator" => "Drupal 7 (http://drupal.org)",
+    if generator = @server.response.headers["x-generator"] 
+      if generator =~ /Drupal/
+        @server.info[:app_server_name] = 'Drupal'
+        @server.info[:app_server_version] =  Version.new(generator[/([\d\.]+)/, 1])
+      end
     end
 
     if @server.info[:app_server_name]

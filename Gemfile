@@ -11,4 +11,13 @@ gem 'slop'
 #gem 'spf'
 #gem 'spf-query'
 gem 'scriptster'
+gem 'httpclient'
 
+group :development, :test do
+  gem 'rake'
+  gem 'webrick'
+  gem 'webmock'
+  gem 'test-unit'
+  gem 'minitest-reporters'
+end
+  

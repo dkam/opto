@@ -19,6 +19,7 @@ class Html
   end
 
   def check
+    return unless @server.response.content_type =~ /html/
     check_canonical
     check_ssb
     check_size

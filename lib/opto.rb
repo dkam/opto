@@ -51,15 +51,20 @@ module Opto
   end
 
   class ServerResponse
-    attr_reader :headers, :data, :doc
+    attr_reader :headers, :data, :doc, :content_type
     def initialize(data)
       @data = data
       @headers = @data.meta 
+      @content_type = @headers["Content-Type"] 
 
-      if @headers["content-type"] =~ /text\/html/
+      if @content_type =~ /text\/html/
         @doc = Nokogiri::HTML(@data)
-      elsif @headers["content-type"] =~ /application\/json/
+        @content_type = :html
+      elsif @content_type =~ /application\/json/
         @doc = JSON.parse(@data)
+        @content_type = :json
+      elsif @content_type =~ /^image/
+        puts "Image" 
       end
     end
   end
@@ -125,6 +130,7 @@ end
 #end
 
 #require 'favicon'
+require 'server_time'
 require 'cache'
 require 'images'
 require 'ssl'

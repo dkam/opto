@@ -19,6 +19,7 @@ class SoftwareGuess
     guess_application_server if [:http, :https].include?(@server.protocol)
     guess_site               if [:http, :https].include?(@server.protocol)
     guess_os                 if [:http, :https].include?(@server.protocol)
+    guess_application        if [:http, :https].include?(@server.protocol)
   end
 
   def guess_http_server
@@ -94,5 +95,15 @@ class SoftwareGuess
 
   def guess_site
     @server.info[:site] = "Shopify" if @server.response.headers['x-shopid']
+    @server.info[:site] = "Github" if @server.response.headers['server'] = "GitHub.com"
   end
+
+  def guess_application
+    if element = @server.response.doc.at_xpath("//div[@class='site-info']")
+      if element.text.strip =~ /Proudly powered by WordPress/
+        @server.info[:application] = 'Wordpress'
+      end
+    end
+    @result.info("Application is #{@server.info[:application]}") if @server.info[:application]
+  end 
 end

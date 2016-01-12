@@ -7,12 +7,6 @@ $:.unshift File.join( File.dirname(__FILE__), "/../lib")
 require 'opto'
 
 opts = Slop.parse do |o|
-  o.string '-g', '--gtin',     'GTIN'
-  o.string '-t', '--title',    'Title'
-  o.string '-a', '--author',   'Author'
-  o.string '-f', '--format',   'Product format'
-  o.string '-b', '--blurb',    'Blurb'
-  o.string '-s', '--source',   'Blurb Source'
   o.string '-d', '--database', 'Database'
   o.on '-h', '--help' do
     puts o

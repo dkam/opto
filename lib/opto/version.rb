@@ -4,6 +4,9 @@ class Version
 
   def initialize(number)
     @major, @minor, @patch = number.split('.').map(&:to_i)
+  rescue => e
+    puts "Version with #{number}"
+    puts e.inspect
   end
 
   def to_a

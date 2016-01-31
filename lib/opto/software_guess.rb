@@ -1,16 +1,14 @@
 class SoftwareGuess < Checker
   Opto.register( self)
-
-
   attr_accessor :server, :response, :result
 
+  suite               'guess'
+  description         'Guess Software'
+  supported_protocols true
+
   def initialize(server)
-    self.supported_protocols = true
-    @description = 'Guess Software'
-    @short_name  = 'guess'
-    @server      = server
+    super
     @response    = server.response
-    @result      = @server.result
   end
 
   def checks

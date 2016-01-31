@@ -3,14 +3,9 @@ require 'cgi'
 class Cache < Checker
   Opto.register( self)
 
-  def initialize(server)
-    self.supported_protocols =  :http, :https
-
-    @description = "Check server cache setup" 
-    @short_name  = 'cache'
-    @server      = server
-    @result      = @server.result
-  end
+  name                'cache'
+  description         'Check server cache setup'
+  supported_protocols :http, :https
 
   def checks
     puts "Try https://redbot.org/?uri=#{CGI.escape(@server.url.to_s)}".yellow

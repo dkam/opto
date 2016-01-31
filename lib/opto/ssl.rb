@@ -7,13 +7,9 @@ class Ssl < Checker
 
   attr_reader :hsts
 
-  def initialize(server)
-    self.supported_protocols  = :https, :smtps
-    @description = 'Checking your SSL setup'
-    @short_name  = 'ssl' 
-    @server      = server
-    @result      = @server.result
-  end
+  suite               'ssl' 
+  description         'Checking your SSL setup'
+  supported_protocols :https, :smtps
 
   def checks
     puts "Try running https://www.ssllabs.com/ssltest/analyze.html?d=#{@server.host}&latest"

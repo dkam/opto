@@ -4,14 +4,9 @@ require 'benchmark'
 class Smtp < Checker
   Opto.register( self)
 
-
-  def initialize(server)
-    self.supported_protocols = :smtp, :smtps
-    @description = 'Check various SMTP settings'
-    @short_name  = 'smtp'
-    @server      = server
-    @result      = @server.result
-  end
+  suite               'smtp'
+  description         'Check various SMTP settings'
+  supported_protocols :smtp, :smtps
 
   def checks
     ctime = Benchmark.realtime do 

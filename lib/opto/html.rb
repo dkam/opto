@@ -5,21 +5,15 @@ class Html < Checker
 
   attr_reader :body 
 
-  def initialize(server)
-    self.supported_protocols = :http, :https
-
-    @description = 'Check HTML'
-    @short_name  = 'html'
-    @server      = server
-    @result      = @server.result
-  end
+  suite               'html'
+  description         'Check HTML'
+  supported_protocols :http, :https
 
   def checks
     check_canonical
     check_ssb
     check_size
   end
-
 
   ##
   # If the page has a canonical URL, check it's the same as the page we were given

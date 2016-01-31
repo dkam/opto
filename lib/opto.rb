@@ -122,30 +122,42 @@ class Numeric
   end
 end
 
+module ClassInstanceVariableAccessor
+  attr_accessor :short_name, :desc, :protocols
+
+  def suite(_name)
+    @short_name = _name
+  end
+
+  def name(_name)
+    @short_name = _name
+  end
+  
+  def description(_desc)
+    @desc = _desc
+  end
+  
+  def supported_protocols(*proto)
+    @protocols = Array(proto).flatten
+  end
+    
+end
+
 class Checker
-  attr_accessor :short_name, :description
-
-  def supported_protocols=(*sp)
-    @supported_protocols = Array(sp).flatten
-  end
-
-  def supported_protocols
-    @supported_protocols
-  end
-
+  extend ClassInstanceVariableAccessor
+  
   def initialize(server)
     @server = server
     @result = @server.result
   end
 
-  def supports?(p)
-    return true if @supported_protocols == true
-    return @supported_protocols.include?(p)
+  def supports?(proto)
+    # Check the class instance variables
+    return true if self.class.protocols == true
+    return self.class.protocols.include?(proto)
   end
 
   def check
-    #puts "Checking #{self.short_name}"     if supports?(@server.protocol)
-    #puts "Not Checking #{self.short_name}" unless supports?(@server.protocol)
     return unless supports?(@server.protocol)
     checks
   end

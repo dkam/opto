@@ -1,14 +1,9 @@
 class ServerTime < Checker
   Opto.register( self)
 
-
-  def initialize(server)
-    self.supported_protocols = :http, :https
-    @description = "Check Server Time"
-    @short_name  = 'time'
-    @server      = server
-    @result      = @server.result
-  end
+  suite                 'time'
+  description           'Check Server Time'
+  supported_protocols   :http, :https
 
   def checks
     check_server_time
@@ -19,6 +14,7 @@ class ServerTime < Checker
       s_time = DateTime.parse(s_date).to_time
       n_time = Time.now
 
+      # Give ourselves +/- a few (t_range) seconds
       t_range = 5
 
       if ((s_time - t_range)...(s_time + t_range)) === n_time

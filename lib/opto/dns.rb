@@ -3,14 +3,9 @@ require 'resolv'
 class Dns < Checker
   Opto.register( self)
 
-
-  def initialize(server)
-    self.supported_protocols = :http, :https, :smtp, :smtps
-    @description = 'Check up on your DNS setup'
-    @short_name  = 'dns'
-    @server      = server
-    @result      = @server.result
-  end
+  suite               'dns'
+  description         'Check up on your DNS setup'
+  supported_protocols :http, :https, :smtp, :smtps
 
   def checks
     check_reverse_mapping

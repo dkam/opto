@@ -1,16 +1,11 @@
 class Images < Checker
   Opto.register( self)
-
   attr_reader :images 
 
+  suite               'images'
+  description         'Check up on your Images'
+  supported_protocols :http, :https
 
-  def initialize(server)
-    self.supported_protocols = :http, :https
-    @description = 'Check up on your Images'
-    @short_name  = 'images'
-    @server      = server
-    @result      = @server.result
-  end
 
   def checks
     @images = @server.response.doc.xpath("//img").collect {|e| Image.new(e, @server.url) }

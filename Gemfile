@@ -12,12 +12,16 @@ gem 'slop'
 #gem 'spf-query'
 gem 'scriptster'
 gem 'httpclient'
+gem 'awesome_print', require: false
 
 group :development, :test do
+  gem 'curb'
   gem 'rake'
   gem 'webrick'
   gem 'webmock'
-  gem 'test-unit'
+  gem 'minitest'
   gem 'minitest-reporters'
+  gem 'byebug'
+  gem 'minitest-osx'
 end
   

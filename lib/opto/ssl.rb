@@ -2,25 +2,20 @@ require 'openssl'
 require 'socket'
 require 'uri'
 
-class Ssl
+class Ssl < Checker
   Opto.register( self)
 
   attr_reader :hsts
 
-  def self.description
-    "Checking your SSL setup" 
-  end
-
-  def self.supports?(server)
-    [ :https, :smtp, :smtps].include?(server.protocol)
-  end
-
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols  = :https, :smtps
+    @description = 'Checking your SSL setup'
+    @short_name  = 'ssl' 
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
+  def checks
     puts "Try running https://www.ssllabs.com/ssltest/analyze.html?d=#{@server.host}&latest"
     check_hsts            
     check_https_redirect  

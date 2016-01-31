@@ -1,42 +1,41 @@
 require 'net/smtp'
 require 'benchmark'
 
-class Smtp
+class Smtp < Checker
   Opto.register( self)
 
-  def self.description
-    "Check various SMTP settings"
+
+  def initialize(server)
+    self.supported_protocols = :smtp, :smtps
+    @description = 'Check various SMTP settings'
+    @short_name  = 'smtp'
+    @server      = server
+    @result      = @server.result
   end
 
-  def self.supports?(protocol)
-    [:smtp, :smtps].include?(protocol)
-  end
-
-  def initialize(data)
-    @data = data
-  end
-
-  def check
+  def checks
     ctime = Benchmark.realtime do 
-      Net::SMTP.start('mailma.nmilne.com', 587) do |conn|
+      Net::SMTP.start(@server.host, 587) do |conn|
 
         if conn.capable_starttls?
-          @data.passed( 'SMTP: TLS Supported') 
+          @result.passed( 'SMTP: TLS Supported') 
         else
-          @data.failed( 'SMTP: TLS Not Supported' )
+          @result.failed( 'SMTP: TLS Not Supported' )
         end
 
         resp = conn.ehlo('localhost')
 
         banner_host = resp.message.gsub(/\d\d\d-/,'').strip
 
-        @data.passed('SMTP: Banner matches host') if     banner_host == @data.host
-        @data.passed('SMTP: Banner matches host') unless banner_host == @data.host
+        @result.passed('SMTP: Banner matches host') if     banner_host == @server.host
+        @result.passed('SMTP: Banner matches host') unless banner_host == @server.host
 
       end
     end
-    @data.passed( "SMTP: Connection time: #{ctime} ") 
+    @result.passed( "SMTP: Connection time: #{ctime} ") 
 
+  rescue Errno::ECONNREFUSED => e
+    @result.failed('SMTP: Connection refused')
   end
 
   def check_relay_access
@@ -59,11 +58,11 @@ END_OF_MESSAGE
         end
       end
     rescue Net::SMTPFatalError => e
-      @data.passed("SMTP: Relay Access Denied" )
+      @result.passed("SMTP: Relay Access Denied" )
     else
-      @data.failed("SMTP: Relay Access Allowed" )
+      @result.failed("SMTP: Relay Access Allowed" )
     end
-    @data.passed("SMTP: Transaction time #{ttime}")
+    @result.passed("SMTP: Transaction time #{ttime}")
   end
 
   def check_spf

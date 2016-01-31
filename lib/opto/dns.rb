@@ -1,22 +1,18 @@
 require 'resolv'
 
-class Dns
+class Dns < Checker
   Opto.register( self)
 
-  def self.description
-    "Check up on your DNS setup" 
-  end
-
-  def self.supports?(server)
-    [:http, :https, :smtp, :smtps].include?(server.protocol)
-  end
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = :http, :https, :smtp, :smtps
+    @description = 'Check up on your DNS setup'
+    @short_name  = 'dns'
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
+  def checks
     check_reverse_mapping
   end
 
@@ -38,7 +34,7 @@ class Dns
       end
 
       if @server.host != rev_name && rev_name != cname
-        @result.failed( "DNS: Your host doesn't have a matching reverse DNS entry (#{@server.host} != #{rev_name}")
+        @result.failed( "DNS: Your host doesn't have a matching reverse DNS entry (#{@server.host} != #{rev_name})")
       elsif @server.host != rev_name && rev_name == cname
         @result.passed( "DNS: Given host is a CName for which reverse resolution matches")
       else

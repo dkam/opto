@@ -1,20 +1,19 @@
-class SoftwareGuess
+class SoftwareGuess < Checker
   Opto.register( self)
 
-  def self.description
-    "Guess Software"
-  end
 
-  def self.supports?(server)
-    true
-  end
+  attr_accessor :server, :response, :result
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = true
+    @description = 'Guess Software'
+    @short_name  = 'guess'
+    @server      = server
+    @response    = server.response
+    @result      = @server.result
   end
 
-  def check
+  def checks
     guess_http_server        if [:http, :https].include?(@server.protocol)
     guess_application_server if [:http, :https].include?(@server.protocol)
     guess_site               if [:http, :https].include?(@server.protocol)
@@ -108,7 +107,7 @@ class SoftwareGuess
 
   def guess_site
     @server.info[:site] = "Shopify" if @server.response.headers['x-shopid']
-    @server.info[:site] = "Github" if @server.response.headers['server'] = "GitHub.com"
+    @server.info[:site] = "Github" if @server.response.headers['server'] == "GitHub.com"
   end
 
   def guess_application

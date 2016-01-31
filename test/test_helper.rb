@@ -1,12 +1,17 @@
-require 'bundler'
-Bundler.require(:default, :development, :test)
-require 'test/unit'
-require 'minitest/reporters'
+#require 'bundler'
+require 'byebug'
+#Bundler.require(:default, :development, :test)
 
+require 'opto'
+require 'test_fixtures'
+
+require "minitest/autorun"
+require "minitest/osx"
+require 'minitest/reporters'
 Minitest::Reporters.use!
 
 
-require 'webmock/test_unit'
+require 'webmock/minitest'
 # By default, let requests out.
 WebMock.allow_net_connect!
 

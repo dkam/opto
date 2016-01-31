@@ -1,16 +1,17 @@
-class Favicon
+class Favicon < Checker
   Opto.register( self)
 
-  def self.description
-    "Check Favicons" 
-  end
-
-  def self.supports?(server)
-    [:http, :https].include?(server.protocol)
-  end
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = :http, :https
+
+    @description = 'Check Favicons'
+    @short_name  = 'favicon'
+    @server      = server
+    @result      = @server.result
+  end
+
+  def checks
+    return true
   end
 end

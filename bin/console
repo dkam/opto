@@ -1,3 +1,2 @@
 #!/bin/bash
-
-irb -I lib -r opto
+irb -Ilib -Itest -r opto -r awesome_print

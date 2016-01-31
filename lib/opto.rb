@@ -24,23 +24,19 @@ module Opto
     attr_reader :uri, :url, :host, :responses, :protocol, :result, :info
 
     def initialize(uri)
-      @responses = []
-      @protocol = case uri
+      @protocol  = case uri
         when /^smtp/ then :smtp
         when /^imap/ then :imap
+        when /^https/ then :https
         when /^http/ then :http
         else :http
       end
-      @uri = uri
-      #@url = Addressable::URI.heuristic_parse( uri )
-      @url = URI.parse( uri )
-      @host    = @url.host
-      #if @url.port.nil? 
-      #  @url.port = 80
-      #  @url.port = 443 if @url.scheme == 'https'
-      #end
+      @uri       = uri
+      @url       = URI.parse( uri )
+      @host      = @url.host
+      @responses = []
 
-      if @protocol == :http
+      if @protocol == :http  || @protocol == :https
         resp =  ServerResponse.new( open(@url) )
         @responses << resp
       end
@@ -104,6 +100,7 @@ module Opto
       @failed.each {|r|  puts "✗ #{r}".red }
     end
   end
+
 end
 
 class Object
@@ -125,21 +122,39 @@ class Numeric
   end
 end
 
+class Checker
+  attr_accessor :short_name, :description
 
-#class OptoSmtp < OptoBase
-#  attr_reader :host
-#
-#  def initialize(url)
-#    @host = url[/smtps?:\/\/([a-zA-Z0-9\.]*)\//,1]
-#    @checks = []
-#    super
-#  end
-#
-#end
+  def supported_protocols=(*sp)
+    @supported_protocols = Array(sp).flatten
+  end
 
-#require 'favicon'
+  def supported_protocols
+    @supported_protocols
+  end
+
+  def initialize(server)
+    @server = server
+    @result = @server.result
+  end
+
+  def supports?(p)
+    return true if @supported_protocols == true
+    return @supported_protocols.include?(p)
+  end
+
+  def check
+    #puts "Checking #{self.short_name}"     if supports?(@server.protocol)
+    #puts "Not Checking #{self.short_name}" unless supports?(@server.protocol)
+    return unless supports?(@server.protocol)
+    checks
+  end
+end
+
+
 require 'server_time'
 require 'html'
+require 'favicon'
 require 'cache'
 require 'images'
 require 'ssl'

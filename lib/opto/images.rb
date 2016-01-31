@@ -1,22 +1,18 @@
-class Images
+class Images < Checker
   Opto.register( self)
 
   attr_reader :images 
 
-  def self.description
-    "Check up on your Images" 
-  end
-
-  def self.supports?(protocol)
-    [:http, :https].include?(protocol)
-  end
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = :http, :https
+    @description = 'Check up on your Images'
+    @short_name  = 'images'
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
+  def checks
     @images = @server.response.doc.xpath("//img").collect {|e| Image.new(e, @server.url) }
     count
     optimise
@@ -69,7 +65,7 @@ class Image
     host   = url.host
     scheme = url.scheme
 
-    @src = url.join(Addressable::URI.parse( element.at_xpath("@src").value ))
+    @src = url.merge( URI.parse( element.at_xpath("@src").value  ) )
 
     # Srcset would only be used with JPG or PNG right?
     @srcset         = element.at_xpath("@srcset")

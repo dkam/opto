@@ -1,20 +1,16 @@
-class Cve
+class Cve < Checker
   Opto.register( self)
 
-  def self.description
-    "Check for CVE"
-  end
-
-  def self.supports?(server)
-    true
-  end
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = true
+    @description = 'Check for CVE'
+    @short_name  = 'cve'
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
+  def checks
     return if  @server.info[:server_version].nil? && @server.info[:app_server_version].nil? 
 
 

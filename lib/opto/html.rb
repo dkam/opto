@@ -1,25 +1,20 @@
 require 'json'
 
-class Html
+class Html < Checker
   Opto.register( self)
 
   attr_reader :body 
 
-  def self.description
-    "Check up on your HTML" 
-  end
-
-  def self.supports?(server)
-    [:http, :https].include?(server.protocol)
-  end
-
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = :http, :https
+
+    @description = 'Check HTML'
+    @short_name  = 'html'
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
-    return unless @server.response.content_type == :html
+  def checks
     check_canonical
     check_ssb
     check_size

@@ -1,20 +1,16 @@
-class Cache
+class CanIUse < Checker
   Opto.register( self)
 
-  def self.description
-    "Check up on CSS features with CanIUse data" 
-  end
-
-  def self.supports?(server)
-    [:http, :https].include?(server.protocol)
-  end
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols  :http, :https
+    @description = "Check up on CSS features with CanIUse data" 
+    @short_name  = 'can_i_use'
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
+  def checks
     'flexbox': 'https://raw.githubusercontent.com/Fyrd/caniuse/master/features-json/flexbox.json'
   end
 

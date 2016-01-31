@@ -1,20 +1,16 @@
-class ServerTime
+class ServerTime < Checker
   Opto.register( self)
 
-  def self.description
-    "Checking Server Time"
-  end
-
-  def self.supports?(server)
-    [:http, :https, :smtp, :smtps].include?(server.protocol)
-  end
 
   def initialize(server)
-    @server = server
-    @result = @server.result
+    self.supported_protocols = :http, :https
+    @description = "Check Server Time"
+    @short_name  = 'time'
+    @server      = server
+    @result      = @server.result
   end
 
-  def check
+  def checks
     check_server_time
   end
 

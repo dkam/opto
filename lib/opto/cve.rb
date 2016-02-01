@@ -1,7 +1,7 @@
 class Cve < Checker
   Opto.register( self)
 
-  name                'cve'
+  suite               'cve'
   description         'Check for CVE'
   supported_protocols true
 

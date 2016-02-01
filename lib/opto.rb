@@ -129,10 +129,6 @@ module ClassInstanceVariableAccessor
     @short_name = _name
   end
 
-  def name(_name)
-    @short_name = _name
-  end
-  
   def description(_desc)
     @desc = _desc
   end

@@ -3,7 +3,7 @@ require 'cgi'
 class Cache < Checker
   Opto.register( self)
 
-  name                'cache'
+  suite                'cache'
   description         'Check server cache setup'
   supported_protocols :http, :https
 

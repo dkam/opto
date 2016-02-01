@@ -1,7 +1,7 @@
 class CanIUse < Checker
   Opto.register( self)
 
-  name                'can_i_use'
+  suite               'can_i_use'
   description         'Check up on CSS features with CanIUse data'
   supported_protocols :http, :https
 

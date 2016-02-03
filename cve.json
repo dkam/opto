@@ -1,5 +1,4 @@
-{ "Nginx": {
-  "url": "http://nginx.org/en/security_advisories.html",
+{ "Nginx": { "url": "http://nginx.org/en/security_advisories.html",
   "cves": [{
       "from": "0.5.6",
       "to": "1.7.5",

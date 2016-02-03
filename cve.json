@@ -1,0 +1,28 @@
+[{
+  "software": "Nginx",
+  "url": "https://www.ruby-lang.org/en/security/",
+  "cves": [{
+      "from": "0.5.6",
+      "to": "1.7.5",
+      "cve": "2014-3616",
+      "title": "SSL session reuse vulnerability (Severity: medium)",
+      "urls": ["https://blah"]
+    }, {
+      "from": "0.5.6",
+      "to": "1.7.5",
+      "cve": "2014-3616",
+      "title": "SSL session reuse vulnerability (Severity: medium)"
+    }
+
+  ]
+}, {
+  "software": "Ruby",
+  "url": "https://www.ruby-lang.org/en/security/",
+  "cves": [{
+    "cve": "2015-1855",
+    "title": "Ruby OpenSSL Hostname Verification",
+    "urls": ["https://www.ruby-lang.org/en/news/2015/04/13/ruby-openssl-hostname-matching-vulnerability/"],
+    "from": "2.1.0",
+    "prior": "2.1.6"
+  }]
+}]

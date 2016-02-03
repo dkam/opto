@@ -149,7 +149,7 @@ class Checker
 
   def supports?(proto)
     # Check the class instance variables
-    return true if self.class.protocols == true
+    return true if self.class.protocols.include?(true) 
     return self.class.protocols.include?(proto)
   end
 

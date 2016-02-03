@@ -1,16 +1,47 @@
 { "Nginx": {
-  "url": "https://www.ruby-lang.org/en/security/",
+  "url": 'http://nginx.org/en/security_advisories.html',
   "cves": [{
       "from": "0.5.6",
       "to": "1.7.5",
       "cve": "2014-3616",
       "title": "SSL session reuse vulnerability (Severity: medium)",
       "urls": ["https://blah"]
-    }, {
+    } 
+    ,{
       "from": "0.5.6",
-      "to": "1.7.5",
-      "cve": "2014-3616",
-      "title": "SSL session reuse vulnerability (Severity: medium)"
+      "to": "1.7.3",
+      "cve": "2014-3556",
+      "title": "STARTTLS command injection (Severity: medium)"
+    }
+    ,{
+      "from": "1.3.15",
+      "to": "1.5.11",
+      "cve": "2014-0133",
+      "title": "SPDY heap buffer overflow (Severity: major)"  
+    }
+    ,{
+      "from": "1.5.10",
+      "to": "1.5.10",
+      "cve": "2014-0088",
+      "title": "SPDY memory corruption (Severity: major)"  
+    }
+    ,{
+      "from": "0.6.18",
+      "to": "1.9.9",
+      "cve": "2016-0742",
+      "title": "Invalid pointer dereference in resolver (Severity: medium)"
+    }
+    ,{
+      "from": "0.6.18",
+      "to": "1.9.9",
+      "cve": "2016-0746",
+      "title": "Use-after-free during CNAME response processing in resolver (Severity: medium)"
+    }
+    ,{
+      "from": "0.6.18",
+      "to": "1.9.9",
+      "cve": "2016-0747",
+      "title": "Insufficient limits of CNAME resolution in resolver (Severity: medium)"
     }
 
   ]

@@ -14,22 +14,25 @@ class Cve < Checker
 
     cve_data = update_cve_files
 
+    if cve_data.nil?
+      @result.warned("CVE Data not available.")
+      return
+    end
+
     server_version = @server.info[:server_version] 
 
     cve_data.dig(@server.info[:server_name], "cves").each do |cve|
       from_v  = Version.new cve['from']
-      to_v    = cve['to'].present?    ? Version.new cve['to'] : nil
-      prior_v = cve['prior'].present? ? Version.new cve['prior'] : nil
+      to_v    = cve['to'].nil?    ? nil : Version.new(cve['to']) 
+      prior_v = cve['prior'].nil? ? nil : Version.new(cve['prior']) 
 
       # If the server version is 
       if server_version >= from_v 
         
         #  if there are no to_ / prior_v or  to_v is present and we're in the range     or  prior is present and we're in the range, then...
-        if ( to_v.nil? && prior_v.nil? ) || ( to_v.present? && server_version <= to_v ) || ( prior_v.present? && server < prior_v )
-          @result.failed("CVE-#{cve['cve']}: #{cve['title']}: #{nginx_link}")
+        if ( to_v.nil? && prior_v.nil? ) || ( !to_v.nil? && server_version <= to_v ) || ( !prior_v.nil? && server < prior_v )
+          @result.failed("CVE-#{cve['cve']}: #{cve['title']}: #{cve['url']}")
         end
-      end
-
       end
 
     end
@@ -61,14 +64,14 @@ class Cve < Checker
       File.write(data_file, data.read)
 
     rescue OpenURI::HTTPError => e
-      puts "Already have data file"
+      puts "CVE Data up-to-date"
     end
 
     begin 
       doc  = JSON.parse(File.read(data_file))
 
     rescue JSON::ParserError => e
-      puts "Parse error for ~/.opto/cve.json"
+      puts "Parse error for CVE data ~/.opto/cve.json"
       return nil
     end
     return doc 

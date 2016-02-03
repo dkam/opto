@@ -1,5 +1,4 @@
-[{
-  "software": "Nginx",
+{ "Nginx": {
   "url": "https://www.ruby-lang.org/en/security/",
   "cves": [{
       "from": "0.5.6",
@@ -15,7 +14,7 @@
     }
 
   ]
-}, {
+}, "Ruby": {
   "software": "Ruby",
   "url": "https://www.ruby-lang.org/en/security/",
   "cves": [{
@@ -25,4 +24,5 @@
     "from": "2.1.0",
     "prior": "2.1.6"
   }]
-}]
+}
+}

@@ -1,0 +1,19 @@
+{
+  "url": "https://www.ruby-lang.org/en/security/",
+  "cves": [
+    {
+      "cve": "2015-7551", 
+      "title": "Unsafe tainted string usage in Fiddle and DL",
+      "urls": ["https://www.ruby-lang.org/en/news/2015/12/16/unsafe-tainted-string-usage-in-fiddle-and-dl-cve-2015-7551/"],
+      "from": "2.1.0",
+      "prior": "2.1.8"
+    }
+    ,{
+      "cve": "2015-1855",
+      "title": "Ruby OpenSSL Hostname Verification",
+      "urls": ["https://www.ruby-lang.org/en/news/2015/04/13/ruby-openssl-hostname-matching-vulnerability/"],
+      "from": "2.1.0",
+      "prior": "2.1.6"
+    }
+  ]
+}

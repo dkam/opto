@@ -1,0 +1,19 @@
+{
+  "url": "https://blog.phusion.nl/tag/security-advisory/",
+  "cves": [
+    {
+      "cve": "2015-7519",
+      "from": "4.0.0",
+      "prior": "4.0.60",
+      "title": "Header overwriting (medium severity)",
+      "urls" :["https://blog.phusion.nl/2015/12/07/cve-2015-7519/"]
+    }
+    ,{
+      "cve": "2015-7519",
+      "from": "5.0.0",
+      "prior": "5.0.22",
+      "title": "Header overwriting (medium severity)",
+      "urls" :["https://blog.phusion.nl/2015/12/07/cve-2015-7519/"]
+    }
+  ]
+}

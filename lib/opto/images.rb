@@ -3,7 +3,7 @@ class Images < Checker
   attr_reader :images 
 
   suite               'images'
-  description         'Check up on your Images'
+  description         'Checks Your Images'
   supported_protocols :http, :https
 
 
@@ -14,36 +14,44 @@ class Images < Checker
   end
 
   def count
-    alt_count   = 0
-    srcset_count= 0
-    other_count  = 0
-    size_count  = 0
+    alt_count        = 0
+    jpg_srcset_count = 0
+    png_srcset_count = 0
+    other_count      = 0
+    size_count       = 0
 
-    @server.response.doc.xpath("//img").each do |img|
-      alt_count += 1 unless img.attributes["alt"].nil?
-      size_count   += 1 unless img.attributes["width"].nil? && img.attributes["height"].nil?
+    @images.each do |img|
+      alt_count        += 1 unless img.alt.nil?
+      size_count       += 1 unless img.width.nil?  && img.height.nil?
+      jpg_srcset_count += 1 if !img.srcset.nil? && img.format?( 'jpg' )
+      png_srcset_count += 1 if !img.srcset.nil? && img.format?( 'png' )
     end
+
     puts "Found #{@images.length} images.  "
     puts "   SVG:   #{@images.select {|i| i.format? 'svg'}.length}"
-    puts "   PNG:   #{@images.select {|i| i.format? 'png'}.length} "
-    puts "   JPG:   #{@images.select {|i| i.format? 'jpg'}.length} JPGs, #{srcset_count} of which use SRCSET"
+    puts "   PNG:   #{@images.select {|i| i.format? 'png'}.length}, #{png_srcset_count} of which use SRCSET"
+    puts "   JPG:   #{@images.select {|i| i.format? 'jpg'}.length}, #{jpg_srcset_count} of which use SRCSET"
     puts "   Other: #{other_count}"
+
+
 
     missing_size = @images.length - size_count
     if missing_size == 0
-      puts "Found #{missing_size} with missing width or height tags".green 
+      @result.passed("Images: #{missing_size} with missing size attributes" ) 
     else
-      puts "Found #{missing_size} with missing width or height tags".red 
+      @result.failed("Images: #{missing_size} with missing size attributes" )
     end
 
     missing_alts = @images.length - alt_count
-    puts "Found #{missing_alts} with no alt tags".green if missing_alts == 0
-    puts "Found #{missing_alts} with no alt tags".red if missing_alts > 0
+    ma = "Images: #{missing_alts} with no alt tags"
+    @result.passed( ma ) if missing_alts == 0
+    @result.failed( ma ) if missing_alts > 0
   end
 
   def optimise
     #@oe.doc.xpath('//img[ends_with(@src, "jpg")]', MyFilter.new).each do |node|
     #
+
     @images.select {|i| i.format? 'jpg'}.each do |image|
       #puts "#{image.src.to_s} : #{image.content_length}"
     end
@@ -52,7 +60,7 @@ class Images < Checker
 end
 
 class Image
-  attr_reader :element, :src, :srcset, :srcset_src, :width, :height, :alt
+  attr_reader :element, :src, :srcset, :srcset_src, :width, :height, :alt, :ext
 
   def initialize(element, url)
     @element= element
@@ -60,7 +68,8 @@ class Image
     host   = url.host
     scheme = url.scheme
 
-    @src = url.merge( URI.parse( element.at_xpath("@src").value  ) )
+    @src  = url.merge( URI.parse( element.at_xpath("@src").value  ) )
+    @ext = @src.path.to_s[/\.([a-z]*)$/, 1]&.downcase
 
     # Srcset would only be used with JPG or PNG right?
     @srcset         = element.at_xpath("@srcset")

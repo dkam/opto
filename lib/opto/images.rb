@@ -71,7 +71,9 @@ class Image
   end
 
   def format
-    @format ||= @src.to_s[/\.(.{3})$/, 1] || to_ext(FastImage.type(@src))
+    @format ||= @src.to_s[/\.(.{3})$/, 1] || to_ext(FastImage.type(@src.to_s))
+  rescue => e
+    puts "Error caught #{e.message}"
   end
 
   def content_length

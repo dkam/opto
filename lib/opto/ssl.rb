@@ -47,10 +47,10 @@ class Ssl < Checker
       #puts "Error : #{e.inspect}"
     end
 
-    @result.passed("Suports SPDY (#{server_protocols.grep(/spdy/).join(', ')})") if server_protocols.grep(/spdy/)
-    @result.passed("Suports HTTP/2 (#{server_protocols.grep(/h2/).join(', ')})") if server_protocols.grep(/h2/)
+    @result.passed("SSL: Suports SPDY (#{server_protocols.grep(/spdy/).join(', ')})") if server_protocols.grep(/spdy/)
+    @result.passed("SSL: Suports HTTP/2 (#{server_protocols.grep(/h2/).join(', ')})") if server_protocols.grep(/h2/)
     server_protocols.select {|p| p =~ /^h2-/ }.each do |pr|
-      @result.passed("Supports HTTP/2 Draft #{pr[/h2-(.*)/, 1]}")
+      @result.passed("SSL: Supports HTTP/2 Draft #{pr[/h2-(.*)/, 1]}")
     end                   
     
     #sock.context.npn_protocols

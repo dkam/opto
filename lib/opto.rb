@@ -160,13 +160,14 @@ class Checker
 end
 
 
-#require 'server_time'
-#require 'html'
-#require 'favicon'
-#require 'cache'
-#require 'images'
-#require 'ssl'
-#require 'dns'
-#require 'smtp'
+require 'server_time'
+require 'compression'
+require 'html'
+require 'favicon'
+require 'cache'
+require 'images'
+require 'ssl'
+require 'dns'
+require 'smtp'
 require 'software_guess'
-require 'cve'
+#require 'cve'

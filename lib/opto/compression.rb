@@ -73,7 +73,7 @@ class Compression < Checker
 
     encoding = compressed_request.meta["content-encoding"]
     if encoding
-      msg = "Compression: #{tag} GZip supported.  #{uncompressed - compressed} Bytes or #{(100 - compressed.to_f / uncompressed * 100).to_i}% saved"
+      msg = "Compression: #{tag} GZip supported.  #{(uncompressed - compressed).to_human} (#{(100 - compressed.to_f / uncompressed * 100).to_i}%) saved"
       return([msg, uncompressed, compressed])
     else
       msg = "Compression: #{tag} GZip not supported"

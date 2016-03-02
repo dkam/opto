@@ -1,7 +1,8 @@
 #require 'bundler'
 require 'byebug'
 #Bundler.require(:default, :development, :test)
-
+#
+$:.unshift File.join( File.dirname(__FILE__), "/../lib")
 require 'opto'
 require 'test_fixtures'
 

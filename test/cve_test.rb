@@ -5,7 +5,13 @@ class CveTest < Minitest::Test
   #  Test the cve.json file is valid"
   ##
   def test_cve_json
-    doc = JSON.parse(File.read(File.expand_path(File.join(__FILE__, '../../', 'cve.json'))))
-    assert !doc.nil?
+
+    Dir.glob( File.expand_path(File.join(__FILE__, '../../data/cve')) + "*.json" ) do |json|
+      puts json
+      doc = JSON.parse(json)
+      assert !doc.nil?
+      assert true
+    end
+
   end
 end

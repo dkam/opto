@@ -122,6 +122,14 @@ class SoftwareGuess < Checker
         @server.info[:application] = 'wordpress'
       end
     end
-    @result.info("Application is #{@server.info[:application]}") if @server.info[:application]
+
+    if generator =  @server.response.doc.at_xpath("//meta[@name='generator']/@content")&.value
+      if generator =~ /wordpress/i
+        @server.info[:application] = 'wordpress'
+        @server.info[:application_version] = Version.new( Version.guess(generator) )
+      end
+    end
+
+    @result.info("Application is #{@server.info[:application]} / #{@server.info[:application_version]||'unknown version'}") if @server.info[:application]
   end 
 end

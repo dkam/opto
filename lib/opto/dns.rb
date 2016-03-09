@@ -29,7 +29,7 @@ class Dns < Checker
       end
 
       if @server.host != rev_name && rev_name != cname
-        @result.failed( "DNS: Your host doesn't have a matching reverse DNS entry (#{@server.host} != #{rev_name})")
+        @result.warned( "DNS: Your host doesn't have a matching reverse DNS entry (#{@server.host} != #{rev_name})")
       elsif @server.host != rev_name && rev_name == cname
         @result.passed( "DNS: Given host is a CName for which reverse resolution matches")
       else

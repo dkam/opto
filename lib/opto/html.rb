@@ -13,6 +13,28 @@ class Html < Checker
     check_canonical
     check_ssb
     check_size
+    check_meta
+  end
+
+  ##
+  # Check Meta Headers
+  ##
+  
+  def check_meta
+    doc = @server.response.doc
+
+    if referrer_policy = doc.at_xpath("//meta[@name='referrer']/@content")&.value
+      @result.passed "HTML: Referrer Policy: #{referrer_policy}"
+    else 
+      @result.warned "HTML: Referrer Policy not set"
+    end
+
+    if char_set = doc.at_xpath("//meta/@charset")&.value
+      @result.passed("HTML: Character Set defined: #{char_set}")
+    else
+      @result.warned("HTML: Character Set not defined")
+    end
+
   end
 
   ##

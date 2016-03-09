@@ -20,7 +20,7 @@ class Cve < Checker
     cve_data = update_cve_files(@server.info[:server_name])
 
     if cve_data.nil?
-      @result.warned("CVE Data not available for #{@server.info[:server_name]}.")
+      @result.warned("CVE Data not available for #{@server.info[:server_name].capitalize}.")
       return
     end
 
@@ -88,10 +88,10 @@ class Cve < Checker
     rescue OpenURI::HTTPError => e
       puts  e.io.status[0] 
       if  e.io.status[0] == "404"
-        puts "CVE data for #{server} not found"
+        return nil
       elsif  e.io.status[0] == "304"
-        puts "CVE Data already up-to-date"
-        puts "#{e.message}"
+        #puts "CVE Data already up-to-date"
+        #puts "#{e.message}"
       end
     end
 

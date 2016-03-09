@@ -45,5 +45,10 @@ class Version
 
     Version.new(next_splits.join('.'))
   end
+
+  def self.guess(str)
+    guess1 = str[/(\d+\.)?(\d+\.)?(\\*|\d+)$/]
+    return guess1
+  end
 end
 #http://shorts.jeffkreeftmeijer.com/2014/compare-version-numbers-with-pessimistic-constraints/

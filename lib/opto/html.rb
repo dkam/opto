@@ -14,6 +14,16 @@ class Html < Checker
     check_ssb
     check_size
     check_meta
+    check_404
+    check_ssl_resources
+  end
+
+  # TODO: Check all elements are available
+  def check_404
+  end
+
+  # TODO: Check all page resources are via HTTPS for pages where are HTTPS
+  def check_ssl_resources
   end
 
   ##

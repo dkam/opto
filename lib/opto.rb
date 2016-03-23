@@ -96,6 +96,7 @@ module Opto
       puts "Report for #{@url}"
       @info.each   {|r|  puts "#{r}" }
       @passed.each {|r|  puts "✓ #{r}".green }
+      @info.each   {|r|  puts "? #{r}".green }
       @warned.each {|r|  puts "! #{r}".yellow }
       @failed.each {|r|  puts "✗ #{r}".red }
     end

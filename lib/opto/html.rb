@@ -15,7 +15,24 @@ class Html < Checker
     check_size
     check_meta
     check_404
-    check_ssl_resources
+    check_mixed_resources
+    check_app_links
+  end
+
+  # TODO: Add Android App links
+  def check_app_links
+    # https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/PromotingAppswithAppBanners/PromotingAppswithAppBanners.html
+    if element = @server.response.doc.at_xpath("//meta[@name='apple-itunes-app']")
+      result = element.attributes['content'].value.split(",").each_with_object({}) {|pair, res| key, value = pair.split('='); res[key.strip]=value.strip }
+      shop_link = "https://itunes.apple.com/app/id#{result['app-id']}?mt=8" if result.keys.include?('app-id')
+      if result.keys.include?('affiliate-data')
+        @result.passed "HTML: iOS app link includes iOS Smart App"
+      else
+        @result.warned "HTML: No Affiliate link for iOS Smart App Banner" 
+      end
+    else
+      @result.info "HTML: No iOS app link"
+    end
   end
 
   # TODO: Check all elements are available
@@ -23,7 +40,7 @@ class Html < Checker
   end
 
   # TODO: Check all page resources are via HTTPS for pages where are HTTPS
-  def check_ssl_resources
+  def check_mixed_resources
   end
 
   ##

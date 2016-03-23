@@ -19,13 +19,16 @@ class Ssl < Checker
     check_protocols
   end
 
+  ## 
+  # TODO check for ALPN in addition to NPN
+  ##
   def check_protocols
     # https://github.com/igrigorik/http-2/blob/master/example/client.rb
 
     uri = @server.url
     tcp = TCPSocket.new(uri.host, uri.port)
     sock = nil
-    server_protocols = nil
+    npn_server_protocols = alpn_server_protocols = nil
 
     ctx = OpenSSL::SSL::SSLContext.new
     ctx.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -35,7 +38,12 @@ class Ssl < Checker
     ctx.npn_select_cb = lambda do |protocols|
       #puts "NPN protocols supported by server: #{protocols}"
       #DRAFT if protocols.include? DRAFT
-      server_protocols = protocols
+      npn_server_protocols = protocols
+    end
+
+    ctx.alpn_protocols = ['h2', "spdy/3", "spdy/2", "http/1.1"]
+    ctx.alpn_select_cb = lambda do |protocols|
+      alpn_server_protocols = protocols 
     end
 
     sock = OpenSSL::SSL::SSLSocket.new(tcp, ctx)
@@ -47,14 +55,22 @@ class Ssl < Checker
       #puts "Error : #{e.inspect}"
     end
 
-    @result.passed("SSL: Suports SPDY (#{server_protocols.grep(/spdy/).join(', ')})") if server_protocols.grep(/spdy/)
-    @result.passed("SSL: Suports HTTP/2 (#{server_protocols.grep(/h2/).join(', ')})") if server_protocols.grep(/h2/)
-    server_protocols.select {|p| p =~ /^h2-/ }.each do |pr|
-      @result.passed("SSL: Supports HTTP/2 Draft #{pr[/h2-(.*)/, 1]}")
-    end                   
+    if npn_server_protocols
+      @result.passed("SSL: Suports SPDY (#{npn_server_protocols.grep(/spdy/).join(', ')})") if npn_server_protocols.grep(/spdy/)
+      @result.passed("SSL: Suports HTTP/2 (#{npn_server_protocols.grep(/h2/).join(', ')})") if npn_server_protocols.grep(/h2/)
+      npn_server_protocols.select {|p| p =~ /^h2-/ }.each do |pr|
+        @result.passed("SSL: Supports HTTP/2 Draft #{pr[/h2-(.*)/, 1]}")
+      end                   
+    else
+      @result.warned("SSL: No support for SPDY or HTTP/2")
+    end
+
+    if alpn_server_protocols
+      puts "Need to work with alpn_server_protocols: #{alpn_server_protocols}"
+    end
     
     #sock.context.npn_protocols
-    #puts server_protocols
+    #puts "NPN: #{npn_server_protocols}"
     sock.close
 
   end

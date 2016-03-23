@@ -26,7 +26,7 @@ class Html < Checker
       result = element.attributes['content'].value.split(",").each_with_object({}) {|pair, res| key, value = pair.split('='); res[key.strip]=value.strip }
       shop_link = "https://itunes.apple.com/app/id#{result['app-id']}?mt=8" if result.keys.include?('app-id')
       if result.keys.include?('affiliate-data')
-        @result.passed "HTML: iOS app link includes iOS Smart App"
+        @result.passed "HTML: iOS app link includes affilaite id"
       else
         @result.warned "HTML: No Affiliate link for iOS Smart App Banner" 
       end

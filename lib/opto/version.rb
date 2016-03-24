@@ -1,4 +1,5 @@
 class Version
+  VERSION = "0.1.0"
   include Comparable
   attr_reader :major, :minor, :patch
 

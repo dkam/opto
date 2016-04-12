@@ -76,13 +76,10 @@ class Html < Checker
 
     if  canonical_url.nil?
       @result.warned("HTML: No Canonical URL") 
-    elsif URI.parse(canonical_url) == URI.parse(@server.uri)
-    #elsif  @server.uri ==  canonical_url
-      #if canonical_url != @server.uri
-      #if URI.parse(canonical_url) != URI.parse(@server.uri)
+    elsif Addressable::URI.parse(canonical_url) == @server.url
       @result.passed("HTML: Canonical URL matches URL") 
     else
-      @result.failed("HTML: Canonical URL (#{canonical_url}) doesn't match given URL (#{@server.uri})") 
+      @result.failed("HTML: Canonical URL (#{canonical_url}) doesn't match given URL (#{@server.url.to_s})") 
     end
   end
 

@@ -5,7 +5,7 @@ require 'opto/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "opto"
-  spec.version       = '0.1.0'
+  spec.version       = '0.1.1'
   spec.authors       = ["Dan Milne"]
   spec.email         = ["d@nmilne.com"]
 

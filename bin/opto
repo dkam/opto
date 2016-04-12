@@ -8,11 +8,21 @@ require 'opto'
 
 
 options = {}
-OptionParser.new do |parser|
-  parser.on("-s", "--suite test-suite", "Which suite to run") do |lib|
+op = OptionParser.new do |opts|
+  opts.banner = "Usage: opto [-s test-suite] server"
+
+  opts.on("-s", "--suite test-suite", "Which suite to run") do |lib|
     options[:suite] = lib
   end
-end.parse!
+end #.parse!
+
+
+op.parse!
+
+if ARGV.length == 0
+  puts op.banner
+  exit
+end
 
 server = Opto::Server.new( ARGV.last )
 

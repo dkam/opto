@@ -27,7 +27,7 @@ class Ssl < Checker
     # https://github.com/igrigorik/http-2/blob/master/example/client.rb
 
     uri = @server.url
-    tcp = TCPSocket.new(uri.host, uri.port)
+    tcp = TCPSocket.new(uri.host, uri.inferred_port)
     sock = nil
     npn_server_protocols = alpn_server_protocols = nil
 

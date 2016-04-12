@@ -12,7 +12,8 @@ class Ssl < Checker
   supported_protocols :https, :smtps
 
   def checks
-    puts "Try running https://www.ssllabs.com/ssltest/analyze.html?d=#{@server.host}&latest"
+    @result.info "Try running https://www.ssllabs.com/ssltest/analyze.html?d=#{@server.host}&latest"
+    @result.info "Try running https://securityheaders.io/?q=https%3A%2F%2F#{@server.host}%2F"
     check_hsts            
     check_https_redirect  
     check_ssl_details

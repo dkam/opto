@@ -24,15 +24,12 @@ module Opto
     attr_reader :uri, :url, :host, :responses, :protocol, :result, :info
 
     def initialize(uri)
-      @protocol  = case uri
-        when /^smtp/ then :smtp
-        when /^imap/ then :imap
-        when /^https/ then :https
-        when /^http/ then :http
-        else :http
-      end
+
       @uri       = uri
-      @url       = URI.parse( uri )
+      @url       = Addressable::URI.heuristic_parse( uri, {scheme: "https", port: '443'} )
+
+      @protocol = @url.scheme.to_sym
+
       @host      = @url.host
       @responses = []
 

@@ -68,7 +68,11 @@ class Image
     host   = url.host
     scheme = url.scheme
 
-    @src  = url.merge( URI.parse( element.at_xpath("@src").value  ) )
+    
+    @src          = URI.parse( element.at_xpath("@src").value  )
+    @src.host   ||= host
+    @src.scheme ||= scheme
+
     @ext = @src.path.to_s[/\.([a-z]*)$/, 1]&.downcase
 
     # Srcset would only be used with JPG or PNG right?

@@ -16,13 +16,14 @@ op = OptionParser.new do |opts|
   end
 end #.parse!
 
-
 op.parse!
 
 if ARGV.length == 0
   puts op.banner
   exit
 end
+
+
 
 server = Opto::Server.new( ARGV.last )
 

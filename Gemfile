@@ -22,6 +22,5 @@ group :development, :test do
   gem 'minitest'
   gem 'minitest-reporters'
   gem 'byebug'
-  gem 'minitest-osx'
 end
   

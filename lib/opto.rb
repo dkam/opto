@@ -4,6 +4,7 @@ require 'colorize'
 require 'fastimage'
 require 'addressable/uri'
 require 'httpclient'
+require 'byebug'
 
 $:.unshift File.join( File.dirname(__FILE__), "/opto")
 
@@ -26,7 +27,7 @@ module Opto
     def initialize(uri)
 
       @uri       = uri
-      @url       = Addressable::URI.heuristic_parse( uri, {scheme: "https", port: '443'} )
+      @url       = Addressable::URI.heuristic_parse( uri, {scheme: "https"} )
 
       @protocol = @url.scheme.to_sym
 
@@ -34,7 +35,15 @@ module Opto
       @responses = []
 
       if @protocol == :http  || @protocol == :https
-        resp =  ServerResponse.new( open(@url) )
+        data = nil
+        begin
+          data = open(@url, redirect: false)
+        rescue OpenURI::HTTPRedirect => e
+          puts "Redirected from #{@url} to #{e.uri.to_s}"
+          puts "Bailing out"
+          raise
+        end
+        resp =  ServerResponse.new( data )
         @responses << resp
       end
       @result = Opto::Result.new(self)

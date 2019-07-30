@@ -1,7 +1,7 @@
 require 'json'
 
 class Html < Checker
-  Opto.register( self)
+  Opto.register(self)
 
   attr_reader :body 
 
@@ -41,6 +41,13 @@ class Html < Checker
 
   # TODO: Check all page resources are via HTTPS for pages where are HTTPS
   def check_mixed_resources
+  end
+
+  ##
+  # Check for UTM links and confirm they're the right case
+  ##
+
+  def check_utm_case
   end
 
   ##

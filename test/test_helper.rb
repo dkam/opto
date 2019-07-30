@@ -7,7 +7,7 @@ require 'opto'
 require 'test_fixtures'
 
 require "minitest/autorun"
-require "minitest/osx"
+#require "minitest/osx"
 require 'minitest/reporters'
 Minitest::Reporters.use!
 

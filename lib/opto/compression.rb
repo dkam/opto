@@ -51,6 +51,11 @@ class Compression < Checker
       css_url = URI.parse(css)
       css_url = normalise(css_url, @server.url)
 
+      if css_url.host != @server.url.host
+        @result.warned("Skipping URL #{js_url}")
+        return
+      end
+
       msg, uncompressed_size, compressed_size = comp_test(css_url, 'CSS')
       @result.passed(msg) unless uncompressed_size.nil?
       @result.failed(msg) if     uncompressed_size.nil?
@@ -68,6 +73,11 @@ class Compression < Checker
       svg_url = URI.parse(svg)
       svg_url = normalise(svg_url, @server.url)
       
+      if svg_url.host != @server.url.host
+        @result.warned("Skipping URL #{js_url}")
+        return
+      end
+
       msg, uncompressed_size, compressed_size = comp_test(svg_url, 'SVG') 
 
       @result.passed(msg) unless uncompressed_size.nil?

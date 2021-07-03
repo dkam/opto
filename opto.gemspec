@@ -5,7 +5,7 @@ require 'opto/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "opto"
-  spec.version       = '0.1.2'
+  spec.version       = '0.1.3'
   spec.authors       = ["Dan Milne"]
   spec.email         = ["d@nmilne.com"]
 
@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_runtime_dependency     'addressable', '~> 2.3'
-  spec.add_runtime_dependency     'nokogiri', '~> 1.6'
+  spec.add_runtime_dependency     'nokogiri', '~> 1'
   spec.add_runtime_dependency     'colorize', '~> 0.7'
   spec.add_runtime_dependency     'fastimage', '~> 1.7'
   spec.add_runtime_dependency     'httpclient', '~> 2.7'

@@ -28,7 +28,8 @@ class Html < Checker
       if result.keys.include?('affiliate-data')
         @result.passed "HTML: iOS app link includes affilaite id"
       else
-        @result.warned "HTML: No Affiliate link for iOS Smart App Banner" 
+        @result.warned "HTML: iOS app link found" 
+        #@result.warned "HTML: No Affiliate link for iOS Smart App Banner" 
       end
     else
       @result.info "HTML: No iOS app link"

@@ -24,8 +24,6 @@ class Compression < Checker
   end
 
   def check_text
-    no_compression = @server.response.data.size
-
     ## Check Javascript
     @server.response.doc.xpath('//script/@src').each do |src|
 
@@ -38,7 +36,7 @@ class Compression < Checker
           @result.warned("Skipping URL #{js_url}")
           next
         end
-        msg, uncompressed_size, compressed_size = comp_test(js_url, 'JS')
+        msg, uncompressed_size, _compressed_size = comp_test(js_url, 'JS')
         @result.passed(msg) unless uncompressed_size.nil?
         @result.failed(msg) if     uncompressed_size.nil?
       end
@@ -52,11 +50,11 @@ class Compression < Checker
       css_url = normalise(css_url, @server.url)
 
       if css_url.host != @server.url.host
-        @result.warned("Skipping URL #{js_url}")
+        @result.warned("Skipping URL #{css_url}")
         return
       end
 
-      msg, uncompressed_size, compressed_size = comp_test(css_url, 'CSS')
+      msg, uncompressed_size, _compressed_size = comp_test(css_url, 'CSS')
       @result.passed(msg) unless uncompressed_size.nil?
       @result.failed(msg) if     uncompressed_size.nil?
     end
